@@ -1038,7 +1038,7 @@ body::after {
 
 /* 引导 / 署名 */
 .tour-hint {
-  position: fixed; left: 12px; right: 12px; bottom: 78px; z-index: 60;
+  position: fixed; left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 24px)); bottom: 78px; z-index: 60;
   background: linear-gradient(120deg, #081120, #060b14);
   border: 1px solid rgba(42, 212, 245, .5); padding: 11px 13px;
   box-shadow: 0 0 0 1px rgba(42, 212, 245, .14), 0 20px 44px -20px #000;
@@ -1112,3 +1112,28 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opac
 /* 引号/角标 */
 .credit{letter-spacing:1px}
 @media (prefers-reduced-motion:reduce){.btn-primary::after{animation:none}}
+
+/* ================= 质感层（参考 Uiverse / React Bits / Aceternity / anime.js 的做法，全部手写零依赖） ================= */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
+/* 卡片聚光：鼠标/手指位置驱动的径向光斑 */
+.card{position:relative;overflow:hidden}
+.card>.spot{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s ease;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(42,212,245,.14),transparent 72%)}
+.card:hover>.spot,.card.spot-on>.spot{opacity:1}
+/* 按钮：按下回弹 + 箭头滑移（Uiverse 常见手法） */
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn{transition:transform .12s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
+/* 滚动进入：安静上浮（React Bits 式 reveal） */
+.reveal{opacity:0;transform:translateY(10px);transition:opacity .5s cubic-bezier(.22,.61,.36,1),transform .5s cubic-bezier(.22,.61,.36,1)}
+.reveal.in{opacity:1;transform:none}
+/* 标题流光（很轻，只在首页主标题） */
+.home-h1{color:var(--ink);text-shadow:0 0 22px rgba(42,212,245,.28),0 1px 0 rgba(0,0,0,.4)}
+/* 章节切换条：滑块感 */
+.chip{transition:background .2s ease,color .2s ease,border-color .2s ease,transform .12s ease}
+.chip:active{transform:scale(.97)}
+/* 卡片左侧发丝线跟随聚光更亮 */
+.card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(180deg,var(--cy),transparent 65%);opacity:.5}
+@media (prefers-reduced-motion:reduce){
+  .home-h1{text-shadow:none}
+  .reveal{opacity:1;transform:none;transition:none}
+}

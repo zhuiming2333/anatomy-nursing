@@ -267,6 +267,7 @@
     else if (tab === 'atlas') viewAtlas(viewEl);
     else viewRef(viewEl);
     window.scrollTo(0, 0);
+    fxPaint(viewEl);
   }
 
   /* ================= 首页 ================= */
@@ -313,7 +314,7 @@
       + '<ellipse cx="68" cy="200" rx="11" ry="5.6"/>'
       + '</g></svg>'
       + '<div class="hero-eyebrow">' + E(fmtDate(new Date())) + '</div>'
-      + '<h1 class="hero-title">系统解剖学</h1>'
+      + '<h1 class="hero-title home-h1">系统解剖学</h1>'
       + '<div class="hero-sub">护理专业 · 期末复习　<span class="tiny muted">名词 ' + TERMS.length + ' · 简答 ' + QA.length + ' · 选择 ' + MCQ.length + '</span></div>'
       + '<div class="hero-rule"></div>'
       + '<div class="hero-stats">'
@@ -1665,11 +1666,101 @@
     return '<div class="card empty"><b>' + E(title) + '</b>' + E(sub || '') + '</div>';
   }
 
+  /* ===== 质感层：星空 / 聚光 / 入场（手写，零依赖） ===== */
+  var FX = { stars: null };
+
+  function fxStars() {
+    if (FX.stars || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var cv = document.createElement('canvas');
+    cv.id = 'stars';
+    document.body.appendChild(cv);
+    var ctx = cv.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = 0, h = 0, pts = [];
+    function size() {
+      w = cv.clientWidth || window.innerWidth;
+      h = cv.clientHeight || window.innerHeight;
+      cv.width = w * dpr; cv.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.round(Math.min(70, Math.max(26, (w * h) / 16000)));
+      pts = [];
+      for (var i = 0; i < n; i++) {
+        pts.push({ x: Math.random() * w, y: Math.random() * h,
+          r: Math.random() * 1.3 + .35, a: Math.random() * .5 + .12,
+          s: Math.random() * .018 + .004, p: Math.random() * 6.28 });
+      }
+    }
+    size();
+    window.addEventListener('resize', size);
+    var raf, alive = true;
+    function draw() {
+      if (!alive) return;
+      raf = requestAnimationFrame(draw);
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        p.p += p.s;
+        var a = p.a * (.55 + .45 * Math.sin(p.p));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(150,225,255,' + a.toFixed(3) + ')';
+        ctx.fill();
+      }
+    }
+    draw();
+    document.addEventListener('visibilitychange', function () {
+      alive = !document.hidden;
+      if (alive) draw(); else cancelAnimationFrame(raf);
+    });
+    FX.stars = cv;
+  }
+
+  /* 卡片聚光：指针位置写进 CSS 变量 */
+  function fxSpot(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('.card'), function (c) {
+      if (c.__spot) return;
+      c.__spot = 1;
+      var s = document.createElement('span');
+      s.className = 'spot';
+      c.insertBefore(s, c.firstChild);
+      c.addEventListener('pointermove', function (e) {
+        var r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+      c.addEventListener('pointerdown', function () { c.classList.add('spot-on'); });
+      c.addEventListener('pointerleave', function () { c.classList.remove('spot-on'); });
+    });
+  }
+
+  /* 入场：滚动到就浮现，1.2s 后兜底全显，绝不把人卡在空白里 */
+  var REVEAL = null;
+  function fxReveal(root) {
+    var els = Array.prototype.slice.call(root.querySelectorAll('.card, .learn-hd, .lec-blk'))
+      .filter(function (e) { return !e.classList.contains('reveal') && !e.closest('.m3-stage'); });
+    if (!els.length) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+    els.forEach(function (e, i) { e.classList.add('reveal'); });
+    REVEAL = REVEAL || new IntersectionObserver(function (list) {
+      list.forEach(function (it) {
+        if (it.isIntersecting) { it.target.classList.add('in'); REVEAL.unobserve(it.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.02 });
+    els.forEach(function (e) { REVEAL.observe(e); });
+    setTimeout(function () { els.forEach(function (e) { e.classList.add('in'); }); }, 1200);
+  }
+
+  function fxPaint(root) {
+    try { fxSpot(root); fxReveal(root); } catch (e) {}
+  }
+
   /* ================= 启动 ================= */
   function boot() {
     viewEl = $('#view');
     tabEl = $('#tabbar');
     applyTheme(S.prefs.theme || 'light');
+    fxStars();
 
     document.addEventListener('click', function (e) {
       var tab = e.target.closest('.tab');
