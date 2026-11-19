@@ -1,5 +1,5 @@
-/* 离线缓存：先缓存后网络，图片走运行时缓存 */
-var CACHE = 'anat-v2';
+﻿/* 离线缓存：先缓存后网络，图片走运行时缓存 */
+var CACHE = 'anat-v3';
 var CORE = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ var CORE = [
   './assets/js/data/fill.js',
   './assets/js/data/vocab.js',
   './assets/js/data/images.js',
+  './assets/js/data/lecture.js',
   './assets/vendor/three.min.js',
   './assets/js/viewer3d.js'
 ];

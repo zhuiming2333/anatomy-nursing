@@ -1069,3 +1069,7 @@ body::after {
 .m3-name { font-family: var(--sans); font-weight: 800; letter-spacing: .03em; }
 .visimgs.one { grid-template-columns: 1fr; }
 .visimgs.one img { height: auto; max-height: 280px; object-fit: contain; background: #060c16; }
+/* 页面撑满：署名压到底部 */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+.app > main.view { flex: 1 0 auto; }
+.credit { flex: none; margin-top: auto; }

@@ -328,7 +328,7 @@
       + '<div class="quick-grid">'
       + quickBtn('recite', 'book', '背诵卡片', due + ' 张待复习', '')
       + quickBtn('quiz', 'quiz', '做一组题', '选择 / 填空 / 默写', 'vein')
-      + quickBtn('atlas', 'image', '看图记忆', IMAGES.length + ' 张解剖图', 'artery')
+      + quickBtn('learn', 'atlas', '按章讲解', (window.ANAT.lectures || []).length + ' 章图文+模型', 'artery')
       + quickBtn('ref', 'ref', '快速速查', TERMS.length + ' 条名词', '')
       + '</div></section>'
 
