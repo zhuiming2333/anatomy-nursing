@@ -1,4 +1,4 @@
-﻿/* 3D 解剖模型查看器（three.js）*/
+/* 3D 解剖模型查看器（three.js）*/
 (function () {
   var THREE = window.THREE;
 
@@ -21,6 +21,7 @@
     return { pos: pos, idx: idx };
   }
 
+  var DEFAULT_HIDE = { heart: ['心室壁'] };
   var PALETTE = ['#3f8fb0', '#4a6fa8', '#4f9a86', '#7a6fa8', '#c25a45', '#5f9ec9', '#8d7a44', '#3f8f9e'];
 
   function Viewer(host, opts) {
@@ -57,7 +58,20 @@
   Viewer.prototype._loop = function () {
     var self = this;
     this._raf = requestAnimationFrame(function () { self._loop(); });
+    /* 没被拖动时缓慢自转，让静止的模型也有生命 */
+    if (this._spin) {
+      this.orbit.theta -= 0.0022;
+      if (this._applyOrbit) this._applyOrbit();
+    }
     this.renderer.render(this.scene, this.camera);
+  };
+
+  /* 用户一上手就停，2.5 秒不动再继续 */
+  Viewer.prototype._touchSpin = function () {
+    var self = this;
+    this._spin = false;
+    clearTimeout(this._spinT);
+    this._spinT = setTimeout(function () { if (!self._dragging) self._spin = true; }, 2500);
   };
 
   Viewer.prototype._bind = function () {
@@ -86,7 +100,7 @@
     }
 
     el.addEventListener('pointerdown', function (e) {
-      down = true; moved = 0; px = e.clientX; py = e.clientY;
+      down = true; self._dragging = true; self._spin = false; clearTimeout(self._spinT); moved = 0; px = e.clientX; py = e.clientY;
       if (e.pointerId !== undefined && el.setPointerCapture) { try { el.setPointerCapture(e.pointerId); } catch (x) {} }
     });
     el.addEventListener('pointermove', function (e) {
@@ -100,9 +114,10 @@
     });
     el.addEventListener('pointerup', function (e) {
       down = false;
+      self._dragging = false; self._touchSpin();
       if (moved < 8) tapTest(e);
     });
-    el.addEventListener('pointercancel', function () { down = false; });
+    el.addEventListener('pointercancel', function () { down = false; self._dragging = false; self._touchSpin(); });
     el.addEventListener('wheel', function (e) {
       e.preventDefault();
       self.orbit.dist *= (1 + (e.deltaY > 0 ? 0.12 : -0.12));
@@ -165,6 +180,8 @@
       mesh.userData.name = p.n;
       self.group.add(mesh);
       self.parts.push(mesh);
+      var hd = DEFAULT_HIDE[scene.id] || [];
+      if (hd.indexOf(p.n) >= 0) mesh.visible = false;
       geo.computeBoundingBox();
       box.union(geo.boundingBox);
     });
@@ -183,7 +200,9 @@
     this.baseDist = this.orbit.dist;
     this.selected = -1;
     this.isolated = false;
+    this._hide = (DEFAULT_HIDE[scene.id] || []).slice();
     this.reset();
+    this._spin = true;
   };
 
   Viewer.prototype.select = function (i) {
@@ -193,7 +212,7 @@
       m.material.emissive = new THREE.Color(0x000000);
       m.material.opacity = 1;
       m.material.transparent = false;
-      m.visible = true;
+      m.visible = !(this._hide && this._hide.indexOf(m.userData.name) >= 0);
     }
     if (i >= 0 && this.parts[i]) {
       this.parts[i].material.emissive = new THREE.Color(0x4a2c10);
@@ -204,6 +223,23 @@
     if (this.onPick) this.onPick(i);
   };
 
+  /* 按名字显隐某一块（如心脏外壁） */
+  Viewer.prototype.setVisible = function (name, on) {
+    for (var k = 0; k < this.parts.length; k++) {
+      if (this.parts[k].userData.name === name) {
+        this.parts[k].visible = !!on;
+        var x = (this._hide || []).indexOf(name);
+        if (on && x >= 0) this._hide.splice(x, 1);
+        if (!on && x < 0) (this._hide = this._hide || []).push(name);
+      }
+    }
+  };
+  Viewer.prototype.isHidden = function (name) {
+    for (var k = 0; k < this.parts.length; k++) {
+      if (this.parts[k].userData.name === name) return !this.parts[k].visible;
+    }
+    return false;
+  };
   Viewer.prototype.isolate = function (v) {
     this.isolated = v;
     this.select(this.selected);

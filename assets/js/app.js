@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    系统解剖学 · 学习站
    纯静态 / 无依赖 / file:// 可直开
    模块：路由 · 间隔重复(SRS) · 背诵 · 做题 · 图解 · 速查 · 设置
@@ -520,7 +520,7 @@
   function sceneFor(chapter, name) {
     var list = CHSCENES[chapter] || [];
     if (!list.length) return null;
-    if (list.length === 1) return list[0];
+    if (list.length === 1 && !name) return list[0];
     if (name) {
       for (var i = 0; i < SCENE_HINT.length; i++) {
         var h = SCENE_HINT[i];
@@ -529,7 +529,6 @@
           if (name.indexOf(h.kw[j]) >= 0) return h.sc;
         }
       }
-      var sc0 = (window.ANAT.m3d && M3D.scene) ? M3D.scene(list[0]) : null;
       var best = null, bestScore = 0;
       list.forEach(function (id) {
         var sc = (window.ANAT.m3d && M3D.scene) ? M3D.scene(id) : null;
@@ -541,8 +540,9 @@
         });
         if (score > bestScore) { bestScore = score; best = id; }
       });
+      // 只有真的对上了部件名/关键词才给模型：宁可不给，也不拿心脏糊弄「掌浅弓」
       if (best) return best;
-      if (sc0) return list[0];
+      return null;
     }
     return list[0];
   }
