@@ -1,5 +1,5 @@
 ﻿/* 离线缓存：先缓存后网络，图片走运行时缓存 */
-var CACHE = 'anat-v4';
+var CACHE = 'anat-v5';
 var CORE = [
   './',
   './index.html',

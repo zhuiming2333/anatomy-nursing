@@ -1039,7 +1039,7 @@ body::after {
 /* 引导 / 署名 */
 .tour-hint {
   position: fixed; left: 12px; right: 12px; bottom: 78px; z-index: 60;
-  background: linear-gradient(120deg, rgba(9, 18, 32, .97), rgba(6, 12, 22, .97));
+  background: linear-gradient(120deg, #081120, #060b14);
   border: 1px solid rgba(42, 212, 245, .5); padding: 11px 13px;
   box-shadow: 0 0 0 1px rgba(42, 212, 245, .14), 0 20px 44px -20px #000;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
@@ -1073,3 +1073,42 @@ body::after {
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 .app > main.view { flex: 1 0 auto; }
 .credit { flex: none; margin-top: auto; }
+/* ================= P3 风格加深（第二遍）：斜切标签 / 半调网点 / 角标 ================= */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:radial-gradient(rgba(42,212,245,.09) 1px, transparent 1px);
+  background-size:14px 14px;mix-blend-mode:screen}
+.app{position:relative;z-index:1}
+/* 章节小标题：斜切色块 + 编号 */
+.lec-h,.sec-h,.card-h{position:relative;padding-left:14px}
+.lec-h::before,.sec-h::before,.card-h::before{content:'';position:absolute;left:0;top:.28em;width:5px;height:1.05em;
+  background:linear-gradient(180deg,var(--cy),var(--cy-d));transform:skewY(-12deg);box-shadow:0 0 10px rgba(42,212,245,.5)}
+/* 章节标签（金色那块）加切角与斜线 */
+.tag,.chip-on,.card-tag{clip-path:polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%)}
+/* 讲解段落序号：P3 的数字牌 */
+.lec-no,.lec-idx{font-variant-numeric:tabular-nums;letter-spacing:1px;color:var(--cy);
+  border:1px solid rgba(42,212,245,.35);padding:0 6px;transform:skewX(-8deg);display:inline-block}
+/* 主按钮：加一道斜切高光 */
+.btn-primary{position:relative;overflow:hidden}
+.btn-primary::after{content:'';position:absolute;top:0;left:-40%;width:26%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-18deg);
+  animation:sweep 4.6s ease-in-out infinite}
+@keyframes sweep{0%,72%{left:-40%}92%,100%{left:120%}}
+/* 底部标签栏：选中项顶部一道断口线 */
+.tab{position:relative}
+.tab.active{color:var(--cy)}
+.tab.active svg{filter:drop-shadow(0 0 6px rgba(42,212,245,.55))}
+/* 标题左侧的斜切装饰条（只看静态，不引发布局变化） */
+.hero-h,.learn-h{position:relative}
+/* 卡片：hover/active 时青色发丝线更亮（桌面才有鼠标） */
+@media (hover:hover){
+  .card{transition:border-color .18s,box-shadow .18s}
+  .card:hover{border-color:rgba(42,212,245,.4);box-shadow:0 0 0 1px rgba(42,212,245,.12),0 8px 24px rgba(0,0,0,.35)}
+}
+/* 3D 舞台：网格地平线，像游戏里的建模预览 */
+.m3-stage{background-image:radial-gradient(circle at 50% 42%,rgba(42,212,245,.13),transparent 62%),
+  linear-gradient(rgba(42,212,245,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(42,212,245,.05) 1px,transparent 1px);
+  background-size:auto,26px 26px,26px 26px}
+/* 引号/角标 */
+.credit{letter-spacing:1px}
+@media (prefers-reduced-motion:reduce){.btn-primary::after{animation:none}}

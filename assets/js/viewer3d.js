@@ -1,4 +1,4 @@
-/* 3D 解剖模型查看器（three.js）*/
+﻿/* 3D 解剖模型查看器（three.js）*/
 (function () {
   var THREE = window.THREE;
 
@@ -169,7 +169,8 @@
       geo.setAttribute('position', new THREE.BufferAttribute(d.pos, 3));
       geo.setIndex(new THREE.BufferAttribute(d.idx, 1));
       geo.computeVertexNormals();
-      var key = p.n.replace(/^(左|右)/, '');
+      // 心脏让四腔各显其色（左右成对同色在心脏上反而看不出四个腔）
+      var key = (scene.id === 'heart') ? p.n : p.n.replace(/^(左|右)/, '');
       if (!colorOf[key]) colorOf[key] = PALETTE[colorSeq++ % PALETTE.length];
       var mat = new THREE.MeshPhongMaterial({
         color: new THREE.Color(colorOf[key]),
