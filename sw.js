@@ -1,5 +1,6 @@
-﻿/* 离线缓存：先缓存后网络，图片走运行时缓存 */
-var CACHE = 'anat-v8';
+/* 离线缓存：页面/样式/脚本走「网络优先」（保证改版立刻生效），
+   图片与 3D 大包走「缓存优先」（省流量、离线可看） */
+var CACHE = 'anat-v9';
 var CORE = [
   './',
   './index.html',
@@ -20,6 +21,16 @@ var CORE = [
   './assets/js/viewer3d.js'
 ];
 
+/* 这些必须联网取最新，否则用户永远停在老版本 */
+function netFirst(url) {
+  if (/\/$/.test(url)) return true;
+  if (/\.html?$/.test(url)) return true;
+  if (/\.css$/.test(url)) return true;
+  if (/\/assets\/js\//.test(url) && !/m3d\.js$/.test(url)) return true;
+  if (/\/sw\.js$/.test(url)) return true;
+  return false;
+}
+
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {
     return Promise.all(CORE.map(function (u) {
@@ -38,6 +49,28 @@ self.addEventListener('activate', function (e) {
 self.addEventListener('fetch', function (e) {
   var req = e.request;
   if (req.method !== 'GET') return;
+  var url = req.url;
+  if (url.indexOf('http') !== 0) return;
+
+  if (netFirst(url)) {
+    e.respondWith(
+      fetch(new Request(url, { cache: 'no-cache', credentials: 'same-origin' })).then(function (res) {
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(req, copy); });
+        }
+        return res;
+      }).catch(function () {
+        return caches.match(req, { ignoreSearch: true }).then(function (hit) {
+          if (hit) return hit;
+          if (req.mode === 'navigate') return caches.match('./index.html');
+          return new Response('', { status: 504 });
+        });
+      })
+    );
+    return;
+  }
+
   e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (hit) {
     if (hit) return hit;
     return fetch(req).then(function (res) {
