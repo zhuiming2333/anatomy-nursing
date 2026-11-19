@@ -63,7 +63,7 @@
   var LSKEY = 'anat.v1';
   var S = loadStore();
   function loadStore() {
-    var base = { srs: {}, days: {}, wrong: {}, notes: {}, prefs: { theme: 'light', goal: 30 } };
+    var base = { srs: {}, days: {}, wrong: {}, notes: {}, fb: [], prefs: { theme: 'light', goal: 30 } };
     try {
       var raw = localStorage.getItem(LSKEY);
       if (!raw) return base;
@@ -72,6 +72,7 @@
       base.days = o.days || {};
       base.wrong = o.wrong || {};
       base.notes = o.notes || {};
+      base.fb = o.fb || [];
       base.prefs = Object.assign({ theme: 'light', goal: 30 }, o.prefs || {});
       return base;
     } catch (e) { return base; }
@@ -254,7 +255,7 @@
   function route() {
     cur = parseHash();
     if (cur.p.ch) { AT.chapter = cur.p.ch; AT.lscene = null; }
-    var okp = TABS.some(function (t) { return t.id === cur.path; }) || cur.path === 'atlas';
+    var okp = TABS.some(function (t) { return t.id === cur.path; }) || cur.path === 'atlas' || cur.path === 'feedback';
     var tab = okp ? cur.path : 'home';
     renderTabs(tab);
     if (AT.viewer) { try { AT.viewer.destroy(); } catch (e) { } AT.viewer = null; }
@@ -266,6 +267,7 @@
     else if (tab === 'quiz') viewQuiz(viewEl);
     else if (tab === 'learn') viewLearn(viewEl);
     else if (tab === 'atlas') viewAtlas(viewEl);
+    else if (cur.path === 'feedback') viewFeedback(viewEl);
     else viewRef(viewEl);
     window.scrollTo(0, 0);
     fxPaint(viewEl);
@@ -1590,6 +1592,111 @@
     });
   }
 
+  /* ================= 意见反馈 ================= */
+  var FB_CATS = ['内容有错', '题目有问题', '功能建议', '其他'];
+  var FB_REPO = 'https://github.com/zhuiming2333/anatomy-nursing/issues/new';
+
+  function fbChapterName() {
+    var id = AT.chapter, name = '';
+    CH.forEach(function (c) { if (c.id === id) name = (c.name || c.title || c.id); });
+    return name;
+  }
+  function fbContext() {
+    var d = new Date(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    return [
+      '页面：' + (location.hash || '#/home'),
+      '章节：' + (fbChapterName() || '未指定'),
+      '屏幕：' + window.innerWidth + '×' + window.innerHeight,
+      '版本：' + (META.version || '1.0'),
+      '时间：' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()),
+      '浏览器：' + (navigator.userAgent || '')
+    ].join('\n');
+  }
+  function fbBuild() {
+    var t = ($('#fb-text') || {}).value || '';
+    var c = ($('#fb-contact') || {}).value || '';
+    var on = $('#fb-ctx') && $('#fb-ctx').checked;
+    return { text: t.trim(), contact: c.trim(), ctx: on ? fbContext() : '' };
+  }
+  function fbMessage(o) {
+    var out = o.text;
+    if (o.contact) out += '\n\n' + '联系方式：' + o.contact;
+    if (o.ctx) out += '\n\n' + '—— 页面信息 ——\n' + o.ctx;
+    return out;
+  }
+  function fbSubmit(kind) {
+    var cat = (document.querySelector('.fb-cat.on') || {}).dataset || { cat: FB_CATS[0] };
+    var o = fbBuild();
+    if (o.text.length < 4) { toast('写一句具体的话吧，比如哪个词不对'); return; }
+    var body = '### 反馈内容\n' + o.text
+      + (o.contact ? '\n\n### 联系方式\n' + o.contact : '')
+      + (o.ctx ? '\n\n### 页面信息\n' + o.ctx : '');
+    if (kind === 'gh') {
+      var title = '[反馈] ' + cat.cat + '：' + o.text.replace(/\s+/g, ' ').slice(0, 26);
+      window.open(FB_REPO + '?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body), '_blank');
+      toast('已打开 GitHub，确认后提交就行');
+    } else {
+      var msg = fbMessage(o);
+      copyText(msg, function (ok) { toast(ok ? '已复制，发我微信就行' : '复制失败，长按手动选'); });
+    }
+    S.fb = (S.fb || []).slice(0, 4);
+    S.fb.unshift({ t: o.text.slice(0, 80), cat: cat.cat, ts: Date.now() });
+    save();
+    paintRecent();
+  }
+  function paintRecent() {
+    var box = $('#fb-recent');
+    if (!box) return;
+    var list = S.fb || [];
+    box.innerHTML = list.length
+      ? '<div class="fb-recent-tip">我之前提过的</div>' + list.map(function (r) {
+          var d = new Date(r.ts), md = (d.getMonth() + 1) + '月' + d.getDate() + '日';
+          return '<div class="fb-item"><b>' + E(r.cat) + '</b><span>' + E(r.t) + '</span><em>' + md + '</em></div>';
+        }).join('')
+      : '';
+  }
+  function copyText(str, cb) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(str).then(function () { cb(true); }, function () { cb(false); });
+      return;
+    }
+    var ta = document.createElement('textarea');
+    ta.value = str; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove(); cb(ok);
+  }
+  function viewFeedback(v) {
+    v.innerHTML = '<div class="card fb-card">'
+      + '<div class="learn-hd"><h2 class="home-h1">意见反馈</h2>'
+      + '<p class="muted">哪个名词解释写错了、哪道题答案不对、想加什么功能——都写在这里。</p></div>'
+      + '<div class="fb-cats">' + FB_CATS.map(function (c, i) {
+          return '<button class="fb-cat' + (i === 0 ? ' on' : '') + '" data-cat="' + E(c) + '">' + E(c) + '</button>';
+        }).join('') + '</div>'
+      + '<textarea class="fb-text" id="fb-text" rows="5" placeholder="写清楚在哪一页、哪一条，比如：名词解释「肾门」写成了肾蒂"></textarea>'
+      + '<input class="fb-contact" id="fb-contact" placeholder="怎么联系你（可选，微信号就行）">'
+      + '<label class="fb-ctx-lab"><input type="checkbox" id="fb-ctx" checked><span>附上当前页面信息，方便定位</span></label>'
+      + '<pre class="fb-ctx" id="fb-ctx-box">' + E(fbContext()) + '</pre>'
+      + '<div class="fb-acts"><button class="btn btn-primary" id="fb-send">发到 GitHub</button>'
+      + '<button class="btn" id="fb-copy">复制内容</button></div>'
+      + '<p class="tiny muted fb-note">GitHub 要登录账号。没有的话点「复制内容」，粘贴到微信发我一样能看到。内容只存在你手机里，不会自动上传。</p>'
+      + '<div class="fb-recent" id="fb-recent"></div>'
+      + '</div>';
+    $$('.fb-cat', v).forEach(function (b) {
+      b.addEventListener('click', function () {
+        $$('.fb-cat', v).forEach(function (x) { x.classList.remove('on'); });
+        b.classList.add('on');
+      });
+    });
+    $('#fb-ctx', v).addEventListener('change', function () {
+      $('#fb-ctx-box').style.display = this.checked ? '' : 'none';
+    });
+    $('#fb-send', v).addEventListener('click', function () { fbSubmit('gh'); });
+    $('#fb-copy', v).addEventListener('click', function () { fbSubmit('copy'); });
+    paintRecent();
+  }
+
   /* ================= 设置 ================= */
   function openSettings() {
     var m = $('#modal');
@@ -1608,6 +1715,8 @@
       + '<label class="btn" style="margin:0">导入<input type="file" accept="application/json,.json" id="imp" hidden></label></div>'
       + '<div class="sheet-row"><span>清空进度<small>背过的、错题、连续天数全部归零</small></span>'
       + '<button class="btn" data-act="reset" style="color:var(--bad)">清空</button></div>'
+      + '<div class="sheet-row"><span>意见反馈<small>哪条写错了、想加什么功能</small></span>'
+      + '<button class="btn" data-act="fb">去写</button></div>'
       + '<div class="divider"></div>'
       + '<div class="small muted" style="line-height:1.9">'
       + '内容：名词 ' + TERMS.length + ' · 简答 ' + QA.length + ' · 选择 ' + MCQ.length + ' · 填空 ' + FILL.length + ' · 术语 ' + VOCAB.length + ' · 图 ' + IMAGES.length + '<br>'
@@ -1630,6 +1739,7 @@
         b.parentNode.querySelector('b').textContent = S.prefs.goal;
       });
     });
+    $('[data-act="fb"]', m).addEventListener('click', function () { close(); go('feedback'); });
     $('[data-act="export"]', m).addEventListener('click', function () {
       var blob = new Blob([JSON.stringify({ srs: S.srs, days: S.days, wrong: S.wrong, prefs: S.prefs }, null, 1)], { type: 'application/json' });
       var a = document.createElement('a');
