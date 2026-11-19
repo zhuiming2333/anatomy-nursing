@@ -1668,6 +1668,7 @@
     ta.remove(); cb(ok);
   }
   function viewFeedback(v) {
+    var th = document.querySelector('.tour-hint'); if (th) th.remove();
     v.innerHTML = '<div class="card fb-card">'
       + '<div class="learn-hd"><h2 class="home-h1">意见反馈</h2>'
       + '<p class="muted">哪个名词解释写错了、哪道题答案不对、想加什么功能——都写在这里。</p></div>'
