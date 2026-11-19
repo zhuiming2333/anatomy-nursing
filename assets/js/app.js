@@ -155,6 +155,7 @@
   ];
   function maybeTour() {
     if (S.prefs.tour) return;
+    if (cur.path === 'feedback') return;
     var i = 0;
     function step() {
       if (i >= TOUR.length) { S.prefs.tour = 1; save(); return; }
