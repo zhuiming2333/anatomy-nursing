@@ -632,3 +632,182 @@ body{
   .tour-hint{ left:auto !important; right:24px !important; transform:none !important; width:400px !important; }
   .vis3d + .visimgs .visimg img{ height:clamp(190px,15vw,270px) !important; }
 }
+/* ==========================================================
+   v2 视觉：让「好看」真正立住（极光底 / 精修卡片 / 有感交互）
+   ========================================================== */
+:root{
+  --peach:#f7a072; --peach-soft:#fdeee6;
+  --mint:#12a08f; --mint-2:#4ac6a9;
+  --lilac:#6f5bd6;
+  --grad-mint:linear-gradient(135deg,#0d7a70 0%,#12998a 55%,#2fbfa6 100%);
+  --grad-brand:linear-gradient(135deg,#128a7d,#6f5bd6);
+}
+/* 极光背景：三层慢速漂移的柔光 */
+body::before{
+  content:""; position:fixed; inset:-20% -10% auto -10%; height:120vh; z-index:0;
+  pointer-events:none; display:block !important;
+  background:
+    radial-gradient(38% 30% at 18% 12%, rgba(18,160,143,.22), transparent 62%),
+    radial-gradient(34% 28% at 82% 6%, rgba(111,91,214,.18), transparent 64%),
+    radial-gradient(30% 26% at 60% 78%, rgba(247,160,114,.14), transparent 66%);
+  filter:blur(6px);
+  animation:aurora 26s ease-in-out infinite alternate;
+}
+@keyframes aurora{
+  0%{ transform:translate3d(0,0,0) scale(1); }
+  50%{ transform:translate3d(-2.5%,1.5%,0) scale(1.06); }
+  100%{ transform:translate3d(2%,-1.5%,0) scale(1.03); }
+}
+@media (prefers-reduced-motion: reduce){ body::before{ animation:none !important; } }
+
+/* 卡片：发丝边 + 顶部微光，悬停轻抬 */
+.card, .quick, .atlas-card{
+  background-image:linear-gradient(180deg,#ffffff 0%, #fcfdff 100%);
+  border:1px solid var(--line) !important;
+}
+.card{ position:relative; }
+.card::before{
+  content:""; position:absolute; inset:0 0 auto 0; height:1px; border-radius:inherit;
+  background:linear-gradient(90deg,transparent,rgba(18,160,143,.35),transparent);
+  opacity:.9; pointer-events:none;
+}
+@media (hover:hover){
+  .quick:hover, .atlas-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 26px -16px rgba(16,32,52,.35) !important;
+    border-color:color-mix(in srgb, var(--primary) 28%, var(--line)) !important;
+  }
+  .visimg img:hover, .atlas-thumb img:hover{ transform:scale(1.03); }
+}
+.visimg img, .atlas-thumb img{ transition:transform .35s cubic-bezier(.2,.7,.2,1); }
+
+/* 主按钮：更厚实的手感 */
+.btn-primary{
+  border-radius:var(--r-m) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 10px 22px -12px rgba(13,122,112,.85) !important;
+  letter-spacing:.02em;
+}
+.btn:not(.btn-ghost):active{ transform:scale(.985) !important; }
+
+/* 分段控件：选中项实心化 */
+.seg{ background:var(--paper-2) !important; border:1px solid var(--line) !important; padding:3px !important; }
+.seg button.on, .seg button[aria-selected="true"]{
+  background:var(--card) !important; color:var(--primary) !important;
+  box-shadow:0 2px 6px rgba(16,32,52,.10) !important;
+}
+
+/* 章节 chip：选中变实心青绿 */
+.chip{ background:var(--card) !important; border:1px solid var(--line) !important; }
+.chip.active{
+  background:var(--grad-mint) !important; color:#fff !important;
+  border-color:transparent !important;
+  box-shadow:0 6px 16px -10px rgba(13,122,112,.9) !important;
+}
+.chip.active .dot{ background:rgba(255,255,255,.85) !important; }
+
+/* 底部导航：选中项加一层柔光 */
+.tab.active{
+  background:linear-gradient(180deg,var(--primary-soft),rgba(255,255,255,0)) !important;
+  color:var(--primary) !important;
+}
+.tab.active svg{ filter:drop-shadow(0 2px 6px rgba(18,160,143,.28)); }
+
+/* 数字：等宽以免跳动 */
+.hero-stat b, .ring-val, .score-big, .ch-num, .stat b{ font-variant-numeric:tabular-nums; }
+
+/* 选中文字 / 键盘焦点 */
+::selection{ background:rgba(18,160,143,.20); }
+:focus-visible{ outline:2px solid color-mix(in srgb, var(--primary) 60%, #fff); outline-offset:2px; border-radius:10px; }
+
+/* 深色版跟随极光改成更冷的蓝绿 */
+[data-theme="dark"] body::before{
+  background:
+    radial-gradient(38% 30% at 18% 12%, rgba(62,207,178,.16), transparent 62%),
+    radial-gradient(34% 28% at 82% 6%, rgba(155,139,240,.16), transparent 64%),
+    radial-gradient(30% 26% at 60% 78%, rgba(247,160,114,.10), transparent 66%);
+}
+[data-theme="dark"] .card, [data-theme="dark"] .quick, [data-theme="dark"] .atlas-card{
+  background-image:linear-gradient(180deg,#171d27 0%, #141a23 100%);
+}
+/* ==========================================================
+   v3：封面精修 —— 让首页那张卡有「质感」而不是一块绿色
+   ========================================================== */
+.hero{
+  background:
+    radial-gradient(120% 90% at 88% 8%, rgba(74,198,169,.55) 0%, transparent 55%),
+    radial-gradient(90% 80% at 4% 96%, rgba(111,91,214,.35) 0%, transparent 60%),
+    linear-gradient(135deg,#0a3f3c 0%,#0e6b62 42%,#12998a 100%) !important;
+  overflow:hidden !important;
+  isolation:isolate;
+}
+/* 斜向流光 + 细网格，压住大片纯色 */
+.hero::before{
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.055) 0 1px, transparent 1px 62px),
+    linear-gradient(105deg, rgba(255,255,255,.16), transparent 42%);
+  mix-blend-mode:screen; opacity:.9;
+}
+/* 右侧同心弧（解剖图谱刻度感） */
+.hero::after{
+  content:''; position:absolute; z-index:0; pointer-events:none;
+  right:-90px; top:-120px; width:420px; height:420px; border-radius:50%;
+  background:radial-gradient(circle, transparent 58%, rgba(255,255,255,.14) 58.6%, transparent 59.4%),
+             radial-gradient(circle, transparent 72%, rgba(255,255,255,.10) 72.6%, transparent 73.4%),
+             radial-gradient(circle, transparent 86%, rgba(255,255,255,.07) 86.6%, transparent 87.4%);
+  opacity:.85;
+}
+.hero > *:not(.hero-spine){ position:relative; z-index:1; }
+.hero-spine{ position:absolute !important; top:-40px !important; right:-26px !important; left:auto !important; bottom:auto !important; width:150px !important; height:auto !important; opacity:.22 !important; }
+.hero-spine{ opacity:.22 !important; color:#fff !important; filter:blur(.2px); }
+.hero-title{
+  letter-spacing:.01em !important;
+  background:linear-gradient(180deg,#ffffff 30%, #d9fff6 100%);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 16px rgba(0,40,36,.35));
+  text-shadow:none !important;
+}
+/* 三个数字之间加分隔线，读起来像仪表盘 */
+@media (min-width:520px){
+  .hero-stats{ gap:0 !important; }
+  .hero-stat{ padding:0 22px !important; border-left:1px solid rgba(255,255,255,.16); }
+  .hero-stat:first-child{ padding-left:0 !important; border-left:0; }
+}
+.hero-stat b small{ opacity:.6; }
+.hero-rule{ height:1px !important; opacity:.5 !important; }
+
+/* 顶部导航选中：桌面端改成「白药丸 + 青字」，别整块染色 */
+.tab.active{ background:transparent !important; }
+@media (min-width:900px){
+  .tabbar{ padding:8px 12px !important; }
+  .tab{ flex:1 1 0 !important; max-width:168px !important; padding:9px 18px !important; border-radius:14px !important; }
+  .tab.active{
+    background:var(--card) !important;
+    box-shadow:0 4px 14px -6px rgba(16,32,52,.22), inset 0 0 0 1px var(--line) !important;
+  }
+}
+@media (max-width:899px){
+  .tab.active{ background:linear-gradient(180deg, var(--primary-soft), transparent) !important; border-radius:14px !important; }
+}
+
+/* 快捷入口图标：四色柔光磁贴 */
+.quick-ico{
+  width:46px !important; height:46px !important; border-radius:14px !important;
+  background:linear-gradient(150deg, var(--tint, #12a08f22), transparent 85%) !important;
+  box-shadow:inset 0 0 0 1px rgba(16,32,52,.05) !important;
+}
+.quick-ico svg{ width:21px !important; height:21px !important; }
+.quick b{ letter-spacing:.01em; }
+
+/* 进度条与掌握度行：填充更有层次 */
+.ch-bar > i, .progress > i{
+  background:linear-gradient(90deg, var(--primary), #4ac6a9 70%, #7ddcc2) !important;
+  box-shadow:0 0 12px -4px rgba(18,160,143,.8);
+}
+
+/* 章节掌握度圆牌：立体一点 */
+.ch-num{
+  border-radius:12px !important;
+  box-shadow:inset 0 -12px 16px -12px rgba(0,0,0,.35), 0 2px 8px -4px rgba(16,32,52,.28);
+  font-weight:700 !important;
+}
