@@ -253,6 +253,7 @@
   }
   function route() {
     cur = parseHash();
+    if (cur.p.ch) { AT.chapter = cur.p.ch; AT.lscene = null; }
     var okp = TABS.some(function (t) { return t.id === cur.path; }) || cur.path === 'atlas';
     var tab = okp ? cur.path : 'home';
     renderTabs(tab);

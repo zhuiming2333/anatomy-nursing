@@ -1,11 +1,12 @@
 ﻿/* 离线缓存：先缓存后网络，图片走运行时缓存 */
-var CACHE = 'anat-v6';
+var CACHE = 'anat-v7';
 var CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
   './favicon.svg',
   './assets/css/app.css',
+  './assets/css/theme.css',
   './assets/js/app.js',
   './assets/js/data/core.js',
   './assets/js/data/terms.js',

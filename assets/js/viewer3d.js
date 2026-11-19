@@ -148,6 +148,35 @@
       self.camera.aspect = w / h;
       self.camera.updateProjectionMatrix();
     };
+
+    /* 容器尺寸一变就重算取景（否则 canvas 被 CSS 拉高 = 图像被拉伸放大、边缘被裁） */
+    if (window.ResizeObserver) {
+      this._ro = new ResizeObserver(function () {
+        var w = self.host.clientWidth || 0, h = self.host.clientHeight || 0;
+        if (!w || !h) return;
+        if (self._w === w && self._h === h) return;
+        self._w = w; self._h = h;
+        self.resize();
+        self.refit();
+      });
+      this._ro.observe(this.host);
+    }
+  };
+
+  /* 依当前宽高比把模型放到框里：够大但不裁边 */
+  Viewer.prototype.refit = function () {
+    var f = this._fit;
+    if (!f) return;
+    var halfV = (this.camera.fov * Math.PI / 180) / 2;
+    var halfH = Math.atan(Math.tan(halfV) * this.camera.aspect);
+    /* 竖直按高、水平按最宽取景：只绕纵轴自转，所以不会被切边，又能尽量占满 */
+    var wide = Math.max(f.size.x, f.size.y) / 2;
+    var dV = (f.size.z / 2) / Math.tan(halfV);
+    var dH = wide / Math.tan(halfH);
+    var dist = Math.max(dV, dH, f.rad * 0.5) * 1.12;
+    this.baseDist = dist;
+    this.orbit.dist = dist;
+    this._applyOrbit();
   };
 
   Viewer.prototype.load = function (scene, onPick) {
@@ -192,12 +221,9 @@
     /* 转到 Y 向上之后的中心（Z-up -> Y-up：x, z, -y）*/
     this.orbit.target.set(center.x, center.z, -center.y);
     var rad = 0.5 * Math.sqrt(size.x * size.x + size.z * size.z + size.y * size.y);
-    var halfV = (this.camera.fov * Math.PI / 180) / 2;
-    var halfH = Math.atan(Math.tan(halfV) * this.camera.aspect);
-    var dV = (size.z / 2) / Math.tan(halfV);
-    var dH = (size.x / 2) / Math.tan(halfH);
-    this.orbit.dist = Math.max(dV, dH, rad * 0.55) * 1.14 + rad * 0.12;
-    this._applyOrbit();
+    this._fit = { size: size, rad: rad };
+    this.orbit.dist = 1;
+    this.refit();
     this.baseDist = this.orbit.dist;
     this.selected = -1;
     this.isolated = false;
@@ -262,6 +288,7 @@
 
   Viewer.prototype.destroy = function () {
     cancelAnimationFrame(this._raf);
+    if (this._ro) { try { this._ro.disconnect(); } catch (e) { } this._ro = null; }
     this.renderer.dispose();
     if (this.renderer.domElement.parentNode) {
       this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
