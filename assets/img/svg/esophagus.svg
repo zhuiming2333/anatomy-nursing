@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" width="720" height="480" role="img" aria-label="食管三狭窄示意图" font-family="system-ui,'Microsoft YaHei',sans-serif">
+<ellipse cx="252" cy="450" rx="32" ry="17" fill="#f7ece7" stroke="#b07a6a" stroke-width="2"/>
+<path d="M180 80H214V176Q198 195 214 214V262Q198 281 214 300V391Q198 410 214 429V436H180V429Q196 410 180 391V300Q196 281 180 262V214Q196 195 180 176V80Z" fill="#f7ece7" stroke="#b07a6a" stroke-width="2.2"/>
+<path d="M176 195H218M176 281H218M176 410H218" fill="none" stroke="#b08a3e" stroke-width="1.8" stroke-dasharray="5 4"/>
+<line x1="140" y1="66" x2="140" y2="436" stroke="#cdbf9e" stroke-width="1.6"/>
+<path d="M130 66H152M130 195H152M130 281H152M130 410H152" fill="none" stroke="#b08a3e" stroke-width="1.8"/>
+<text x="40" y="42" font-size="13" fill="#6b6355">距中切牙（cm）</text>
+<text x="124" y="70" font-size="13" fill="#6b6355" text-anchor="end">0</text>
+<text x="124" y="199" font-size="13" fill="#8d6a2e" text-anchor="end">15</text>
+<text x="124" y="285" font-size="13" fill="#8d6a2e" text-anchor="end">25</text>
+<text x="124" y="414" font-size="13" fill="#8d6a2e" text-anchor="end">40</text>
+<path d="M246 148L216 152" fill="none" stroke="#8a8580" stroke-width="1.2"/>
+<text x="250" y="152" font-size="15" font-weight="700" fill="#8d5c52">食管</text>
+<text x="252" y="110" font-size="13" fill="#b03a2e">※ 三处狭窄为异物滞留、肿瘤好发处</text>
+<path d="M248 186L218 194" fill="none" stroke="#8a8580" stroke-width="1.2"/>
+<text x="252" y="190" font-size="14" font-weight="700" fill="#2b2b2b">① 食管起始处</text>
+<text x="252" y="212" font-size="13" fill="#5a5450">平环状软骨下缘（第6颈椎）</text>
+<path d="M248 272L218 280" fill="none" stroke="#8a8580" stroke-width="1.2"/>
+<text x="252" y="276" font-size="14" font-weight="700" fill="#2b2b2b">② 与左主支气管、主动脉弓交叉</text>
+<text x="252" y="298" font-size="13" fill="#5a5450">平胸骨角（第4、5胸椎）</text>
+<path d="M248 401L218 409" fill="none" stroke="#8a8580" stroke-width="1.2"/>
+<text x="252" y="405" font-size="14" font-weight="700" fill="#2b2b2b">③ 穿膈食管裂孔处</text>
+<text x="252" y="427" font-size="13" fill="#5a5450">平第10胸椎</text>
+<text x="298" y="456" font-size="13" fill="#5a5450">→ 胃贲门</text>
+</svg>

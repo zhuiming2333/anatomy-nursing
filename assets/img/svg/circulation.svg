@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" width="720" height="480" role="img" aria-label="体循环与肺循环示意图" font-family="system-ui,'Microsoft YaHei',sans-serif">
+<defs>
+<marker id="ar" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto"><path d="M0 0L13 6.5L0 13Z" fill="#b03a2e"/></marker>
+<marker id="av" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto"><path d="M0 0L13 6.5L0 13Z" fill="#2b6f6b"/></marker>
+</defs>
+<text x="26" y="36" font-size="19" font-weight="700" fill="#2b2b2b">体循环与肺循环</text>
+<line x1="26" y1="62" x2="52" y2="62" stroke="#b03a2e" stroke-width="4"/>
+<text x="60" y="67" font-size="13" fill="#2b2b2b">动脉血</text>
+<line x1="26" y1="88" x2="52" y2="88" stroke="#2b6f6b" stroke-width="4"/>
+<text x="60" y="93" font-size="13" fill="#2b2b2b">静脉血</text>
+<rect x="250" y="52" width="220" height="94" rx="14" fill="#eef2f1" stroke="#8fa3a1" stroke-width="1.8"/>
+<text x="360" y="88" font-size="17" font-weight="700" fill="#2b2b2b" text-anchor="middle">肺</text>
+<text x="360" y="112" font-size="13" fill="#5a6b6a" text-anchor="middle">肺泡毛细血管网 · 气体交换</text>
+<text x="360" y="134" font-size="13" fill="#5a6b6a" text-anchor="middle">（小循环）</text>
+<path d="M300 200V150" fill="none" stroke="#2b6f6b" stroke-width="6" marker-end="url(#av)"/>
+<text x="292" y="184" font-size="13" fill="#2b6f6b" text-anchor="end">肺动脉干</text>
+<path d="M420 150V200" fill="none" stroke="#b03a2e" stroke-width="6" marker-end="url(#ar)"/>
+<text x="428" y="184" font-size="13" fill="#b03a2e">肺静脉</text>
+<rect x="250" y="200" width="220" height="132" rx="16" fill="#fbfaf8" stroke="#b0a49e" stroke-width="1.8"/>
+<rect x="256" y="206" width="98" height="120" rx="12" fill="#e7f0ef"/>
+<rect x="366" y="206" width="98" height="120" rx="12" fill="#f9ecea"/>
+<text x="305" y="256" font-size="16" font-weight="700" fill="#2b6f6b" text-anchor="middle">右心</text>
+<text x="305" y="282" font-size="13" fill="#2b6f6b" text-anchor="middle">右心房</text>
+<text x="305" y="306" font-size="13" fill="#2b6f6b" text-anchor="middle">右心室</text>
+<text x="415" y="256" font-size="16" font-weight="700" fill="#b03a2e" text-anchor="middle">左心</text>
+<text x="415" y="282" font-size="13" fill="#b03a2e" text-anchor="middle">左心房</text>
+<text x="415" y="306" font-size="13" fill="#b03a2e" text-anchor="middle">左心室</text>
+<path d="M470 258H512V178Q512 162 528 162H578Q594 162 594 178V405Q594 423 578 423H550" fill="none" stroke="#b03a2e" stroke-width="6" marker-end="url(#ar)"/>
+<path d="M594 250V290" fill="none" stroke="#b03a2e" stroke-width="6" marker-end="url(#ar)"/>
+<path d="M594 350V392" fill="none" stroke="#b03a2e" stroke-width="6" marker-end="url(#ar)"/>
+<text x="534" y="304" font-size="14" fill="#b03a2e" text-anchor="middle">主动脉</text>
+<path d="M180 423H146Q128 423 128 405V276Q128 258 146 258H250" fill="none" stroke="#2b6f6b" stroke-width="6" marker-end="url(#av)"/>
+<path d="M128 380V342" fill="none" stroke="#2b6f6b" stroke-width="6" marker-end="url(#av)"/>
+<text x="196" y="332" font-size="14" fill="#2b6f6b" text-anchor="middle">上下腔静脉</text>
+<rect x="180" y="396" width="364" height="54" rx="12" fill="#f4f1ea" stroke="#cdbf9e" stroke-width="1.8"/>
+<text x="362" y="419" font-size="14" font-weight="700" fill="#2b2b2b" text-anchor="middle">全身各部毛细血管网</text>
+<text x="362" y="439" font-size="13" fill="#6b6355" text-anchor="middle">组织内气体与物质交换</text>
+<text x="360" y="380" font-size="13" fill="#7a736c" text-anchor="middle">体循环（大循环）</text>
+<text x="24" y="470" font-size="13" fill="#5a5450">※ 肺动脉内流静脉血，肺静脉内流动脉血</text>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#f2ede4"/>
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#a98545" stroke-width="1.2" opacity=".55"/>
+  <text x="32" y="41.5" text-anchor="middle" font-family="Songti SC, STSong, serif" font-size="26" fill="#a83a2f">解</text>
+</svg>
