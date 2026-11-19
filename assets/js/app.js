@@ -1597,6 +1597,14 @@
   var FB_CATS = ['内容有错', '题目有问题', '功能建议', '其他'];
   var FB_REPO = 'https://github.com/zhuiming2333/anatomy-nursing/issues/new';
 
+  function uaShort() {
+    var u = navigator.userAgent || '';
+    var name = /Edg\//.test(u) ? 'Edge' : /Firefox\//.test(u) ? 'Firefox'
+      : /Chrome\//.test(u) ? 'Chrome' : /Safari\//.test(u) ? 'Safari' : '浏览器';
+    var m = u.match(/Edg\/([\d.]+)/) || u.match(/Firefox\/([\d.]+)/)
+      || u.match(/Chrome\/([\d.]+)/) || u.match(/Version\/([\d.]+)/);
+    return name + (m ? ' ' + m[1].split('.')[0] : '');
+  }
   function fbChapterName() {
     var id = AT.chapter, name = '';
     CH.forEach(function (c) { if (c.id === id) name = (c.name || c.title || c.id); });
@@ -1610,7 +1618,7 @@
       '屏幕：' + window.innerWidth + '×' + window.innerHeight,
       '版本：' + (META.version || '1.0'),
       '时间：' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()),
-      '浏览器：' + (navigator.userAgent || '')
+      '设备：' + uaShort() + ' · ' + (navigator.platform || '未知')
     ].join('\n');
   }
   function fbBuild() {
